@@ -28,58 +28,28 @@ for FilmN=1:Nu
 end
 save("Opcao2Data", "FilmMinHash")
 %% Opcao 3
-tic
-Users = unique(udata(:,1));
-Nu = length(Users);
-k = 200;
-seedMatrix = randi([1 1000],1,k);
-InteressesMinHash = zeros(Nu,k);
-KeyArr2 = zeros(1,200000000);
-i= 1;
-for UserN=1:Nu
-    UserData = UserDic(UserN,4:end);
-    x = cellfun(@numel,UserData);
-    UserData(x==1) = [];
-    for hashFuncN=1:k
-        hashArr=zeros(1,length(UserData));
-        for InteressesN=1:length(UserData)
-            key=[num2str(stringToNum(UserData{InteressesN})) num2str(hashFuncN)];
-            KeyArr2(i) = str2num(key);
-            i = i +1;
-        end
-    end
-end
-toc
-tic
-Users = unique(udata(:,1));
-Nu = length(Users);
-k = 200;
-i= 1;
-seedMatrix = randi([1 1000],1,k);
-InteressesMinHash = zeros(Nu,k);
-KeyArr = zeros(1,200000000);
-for UserN=1:Nu
-    UserData = UserDic(UserN,4:end);
-    x = cellfun(@numel,UserData);
-    UserData(x==1) = [];
-    for hashFuncN=1:k
-        hashArr=zeros(1,length(UserData));
-        for InteressesN=1:length(UserData)
-            key=stringToNum(UserData{InteressesN})*10^(ceil(log10(abs(hashFuncN)))+1) + hashFuncN;
-            KeyArr(i) = key;
-            i = i +1;
-        end
-    end
-end
-toc
 
-for i=1:length(KeyArr)
-    if KeyArr(i) ~= KeyArr2(i)
-        fprintf("%d != %d\n", KeyArr(i),    (i))
+Users = unique(udata(:,1));
+Nu = length(Users);
+k = 200;
+seedMatrix = randi([1 1000],1,k);
+InteressesMinHash = zeros(Nu,k);
+for UserN=1:Nu
+    UserData = UserDic(UserN,4:end);
+    x = cellfun(@numel,UserData);
+    UserData(x==1) = [];
+    for hashFuncN=1:k
+        hashArr=zeros(1,length(UserData));
+        for InteressesN=1:length(UserData)
+            key=stringToNum(UserData{InteressesN})*10^(ceil(log10(abs(hashFuncN)+1))) + hashFuncN;
+            hashArr(UserN) = rem(DJB31MA(key, seedMatrix(hashFuncN)), N)+1;
+        end
     end
 end
-%%
-UserInterestDistance=zeros(Nu,Nu); % array para guardar distancias
+
+
+
+    UserInterestDistance=zeros(Nu,Nu); % array para guardar distancias
 for n1= 1:Nu
     for n2= 1:Nu
         isMatch = InteressesMinHash(n1,:)==InteressesMinHash(n2,:);
@@ -93,7 +63,7 @@ Nu = length(FilmDic);
 k = 200;
 seedMatrix = randi([1 1000],1,k);
 FilmNameMinHash = zeros(Nu,k);
-shingleSize = 4;
+shingleSize = 3;
 for FilmNameN=1:Nu
     FilmName = FilmDic{FilmNameN,1};
     for hashFuncN=1:k
