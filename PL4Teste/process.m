@@ -1,7 +1,6 @@
 clear all
 %% General Data
 udata = load("ml-100k\u.data");
-
 FilmDic = readcell("film_info.txt", 'Delimiter', '\t');
 N = 7919;
 
@@ -47,9 +46,7 @@ for UserN=1:Nu
     end
 end
 
-
-
-    UserInterestDistance=zeros(Nu,Nu); % array para guardar distancias
+UserInterestDistance=zeros(Nu,Nu); % array para guardar distancias
 for n1= 1:Nu
     for n2= 1:Nu
         isMatch = InteressesMinHash(n1,:)==InteressesMinHash(n2,:);
